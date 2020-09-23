@@ -13,7 +13,7 @@ enum CalculatorButton:String{
     case zero, one, two, three, four, five, six, seven, eight, nine
     case equals, plus, minus, multiply, divide
     case decimal
-    case ac, plusMinus, percent
+    case ac, plusMinus, percent, c
     case null
     var title:String{
         switch self {
@@ -31,7 +31,7 @@ enum CalculatorButton:String{
         case .multiply: return "X"
         case .divide: return "/"
         case .percent: return "%"
-        case .plusMinus: return "+/-"
+        case .c: return "C"
         case .minus: return "-"
         case .plus: return "+"
         case .decimal: return "."
@@ -39,11 +39,31 @@ enum CalculatorButton:String{
             return "AC"
         }
     }
+    var ops:(Float, Float)->Float{
+        switch self {
+        case .plus:
+            return {$0+$1}
+        case .minus:
+            return {$0-$1}
+        case .multiply:
+            return {$0*$1}
+        case .divide:
+            return {$0/$1}
+        case .percent:
+            return {
+                $0.truncatingRemainder(dividingBy:$1)
+            }
+        default:
+            return {s1, s2 in
+                return s1
+            }
+        }
+    }
     var background: Color{
         switch self {
-        case .zero, .one, .two, .three, .four, .five, .six, .seven, .eight, .nine:
+        case .zero, .one, .two, .three, .four, .five, .six, .seven, .eight, .nine, .decimal:
             return Color(.darkGray)
-        case .ac, .plus, .percent:
+        case .ac, .percent, .c:
             return Color(.lightGray)
         default:
             return .orange
@@ -52,10 +72,51 @@ enum CalculatorButton:String{
 }
 
 class GlobalEnviroment: ObservableObject {
-    @Published var display = ""
-   
+    @Published var display = "0"
+    @Published var numStr = ""
+    @Published var ops:CalculatorButton = .null
+    @Published var tempCalculation:Float = 0
+    @Published var calcualtion:Float = 0
     func receiveInput(calculatorButton:CalculatorButton){
-        display = calculatorButton.title
+        
+        if  calculatorButton == .zero || calculatorButton == .one || calculatorButton == .two || calculatorButton == .two || calculatorButton == .three || calculatorButton == .four ||
+            calculatorButton == .five || calculatorButton == .six ||
+            calculatorButton == .seven || calculatorButton == .eight ||
+        calculatorButton == .nine || calculatorButton == .decimal {
+            numStr += calculatorButton.title
+            display = numStr
+            if ops == .null || ops == .equals {
+                calcualtion = Float(numStr)!
+            }
+            tempCalculation = ops.ops(calcualtion, Float(numStr)!)
+        }
+        else if calculatorButton == .plus || calculatorButton == .minus || calculatorButton == .multiply || calculatorButton == .divide || calculatorButton == .percent {
+            ops = calculatorButton
+            numStr = ""
+            calcualtion = tempCalculation
+        }
+        else if calculatorButton  == .c{
+            numStr = ""
+            display = "0"
+            tempCalculation = 0
+        }
+        else if calculatorButton == .ac {
+            ops = .null
+            numStr = ""
+            display = "0"
+            tempCalculation = 0
+            calcualtion = 0
+        }
+        else if calculatorButton == .equals {
+            ops = calculatorButton
+            numStr = ""
+            calcualtion = tempCalculation
+            if calcualtion.truncatingRemainder(dividingBy: 1) == 0 {
+                display = "\(Int(calcualtion))"
+            }else {
+            display = "\(calcualtion)"
+            }
+        }
     }
 }
 
@@ -64,7 +125,7 @@ struct ContentView: View {
     @EnvironmentObject var env: GlobalEnviroment
     
     let buttons:[[CalculatorButton]] = [
-        [.ac, .plusMinus, .percent, .divide],
+        [.ac, .c, .percent, .divide],
         [.seven, .eight, .nine, .multiply],
         [.four, .five, .six, .minus],
         [.one, .two, .three, .plus],
