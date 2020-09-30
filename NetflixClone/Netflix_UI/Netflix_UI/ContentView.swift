@@ -115,7 +115,7 @@ struct SearchBar:View{
 
 
 extension UIApplication {
-     func closeKeyboar(){
+    func closeKeyboar(){
         self.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
