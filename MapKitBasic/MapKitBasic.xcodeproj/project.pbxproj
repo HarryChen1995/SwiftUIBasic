@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		314B73B125265E39003EDC98 /* LocationMananger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314B73B025265E39003EDC98 /* LocationMananger.swift */; };
+		314B73BC25267883003EDC98 /* CustomPlaceMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314B73BB25267883003EDC98 /* CustomPlaceMarker.swift */; };
 		31B167E325251EA5000FE0BF /* MapKitBasicApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B167E225251EA5000FE0BF /* MapKitBasicApp.swift */; };
 		31B167E525251EA5000FE0BF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B167E425251EA5000FE0BF /* ContentView.swift */; };
 		31B167E725251EA8000FE0BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31B167E625251EA8000FE0BF /* Assets.xcassets */; };
@@ -14,6 +16,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		314B73B025265E39003EDC98 /* LocationMananger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationMananger.swift; sourceTree = "<group>"; };
+		314B73BB25267883003EDC98 /* CustomPlaceMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPlaceMarker.swift; sourceTree = "<group>"; };
 		31B167DF25251EA5000FE0BF /* MapKitBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapKitBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31B167E225251EA5000FE0BF /* MapKitBasicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitBasicApp.swift; sourceTree = "<group>"; };
 		31B167E425251EA5000FE0BF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -52,8 +56,10 @@
 		31B167E125251EA5000FE0BF /* MapKitBasic */ = {
 			isa = PBXGroup;
 			children = (
-				31B167E225251EA5000FE0BF /* MapKitBasicApp.swift */,
+				314B73B025265E39003EDC98 /* LocationMananger.swift */,
 				31B167E425251EA5000FE0BF /* ContentView.swift */,
+				314B73BB25267883003EDC98 /* CustomPlaceMarker.swift */,
+				31B167E225251EA5000FE0BF /* MapKitBasicApp.swift */,
 				31B167E625251EA8000FE0BF /* Assets.xcassets */,
 				31B167EB25251EA8000FE0BF /* Info.plist */,
 				31B167E825251EA8000FE0BF /* Preview Content */,
@@ -138,7 +144,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				314B73BC25267883003EDC98 /* CustomPlaceMarker.swift in Sources */,
 				31B167E525251EA5000FE0BF /* ContentView.swift in Sources */,
+				314B73B125265E39003EDC98 /* LocationMananger.swift in Sources */,
 				31B167E325251EA5000FE0BF /* MapKitBasicApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,47 +7,84 @@
 
 import SwiftUI
 import MapKit
-import CoreLocation
-import Combine
-
-class LocationManger:NSObject, CLLocationManagerDelegate, ObservableObject {
-    var locationManger = CLLocationManager()
-    @Published var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.3875, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1))
-    override init(){
-        super.init()
-        self.locationManger.delegate = self
-        self.locationManger.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManger.distanceFilter = kCLDistanceFilterNone
-        self.locationManger.requestWhenInUseAuthorization()
-        self.locationManger.activityType = .automotiveNavigation
-        self.locationManger.allowsBackgroundLocationUpdates = true
-        self.locationManger.requestWhenInUseAuthorization()
-        self.locationManger.startUpdatingLocation()
-
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let mylocation = locations.last else{
-            return
-        }
-        print(mylocation)
-        self.region = MKCoordinateRegion(center: mylocation.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
-
-        }
-    
-    
-}
-
-
-
 
 struct ContentView: View {
-    @StateObject var mananger = LocationManger()
-
+    
+    @StateObject var locationMananger = LocationMananger()
+    @State var text:String = ""
     var body: some View {
-        Map(coordinateRegion: $mananger.region).ignoresSafeArea(.all)
+        NavigationView{
+            ZStack(alignment:.top){
+                Map(coordinateRegion: $locationMananger.reigion, annotationItems: locationMananger.matchingItems , annotationContent: {place in
+                    MapAnnotation(coordinate: place.coordinate, content: {
+                        CustomPlaceMarker(name: place.name).animation(.default)
+                        
+                    })
+                }).ignoresSafeArea(.all)
+                SearchBar(text: $text, locationManager: locationMananger).padding()
+            }.navigationTitle("").navigationBarHidden(true)
+        }
     }
 }
+
+
+struct SearchBar:View{
+    @Binding var text:String
+    @State var isEditing = false
+    var locationManager:LocationMananger
+    var body: some View {
+        HStack{
+            HStack{
+                Image(systemName: "magnifyingglass").padding(.leading, 10)
+                ZStack(alignment: .leading){
+                    if text.isEmpty {
+                        Text("Search")
+                    }
+                    TextField("", text: $text)
+                }.padding()
+                Button(action:{
+                    self.text = ""
+                }){
+                    Image(systemName: "xmark.circle.fill")
+                }.padding(.trailing, 10)
+            }.background(Color(UIColor.systemGray)).cornerRadius(10)
+            .onChange(of: text, perform: { text in
+                if text == ""{
+                    locationManager.matchingItems.removeAll()
+                }else{
+                    locationManager.searchPlace(text: text)
+                }
+                
+            })
+            .gesture(
+                
+                TapGesture().onEnded(
+                    {
+                        self.isEditing = true
+                    }
+                )
+                
+            )
+            if isEditing {
+                Button(action: {
+                    UIApplication.shared.closeKeyboar()
+                    self.isEditing = false
+                    self.text = ""
+                }){
+                    Text("Cancel").foregroundColor(Color(UIColor.systemGray)).fontWeight(.bold)
+                }.transition(.move(edge: .trailing))
+            }
+        }.foregroundColor(.white).animation(.default)
+    }
+}
+
+
+extension UIApplication {
+    func closeKeyboar(){
+        self.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
