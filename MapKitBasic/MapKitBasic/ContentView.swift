@@ -7,29 +7,58 @@
 
 import SwiftUI
 import MapKit
-
+let span = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+let userSpan = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+let appleSpan = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+let appleCampusCoordinate = CLLocationCoordinate2D(latitude: 37.33182, longitude: -122.03118)
 struct ContentView: View {
-    
-    @StateObject var locationMananger = LocationMananger()
     @State var text:String = ""
+    @StateObject var locationMananger = LocationMananger()
+    @State var region =  MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.3875, longitude: -122.4194), span: span)
     var body: some View {
+        
         NavigationView{
             ZStack(alignment:.top){
-                Map(coordinateRegion: $locationMananger.reigion, annotationItems: locationMananger.matchingItems , annotationContent: {place in
+                Map(coordinateRegion: $region,annotationItems: locationMananger.matchingItems , annotationContent: {place in
                     MapAnnotation(coordinate: place.coordinate, content: {
-                        CustomPlaceMarker(name: place.name).animation(.default)
+                        CustomPlaceMarker(name: place.name).transition(.slide)
                         
                     })
-                }).ignoresSafeArea(.all)
-                SearchBar(text: $text, locationManager: locationMananger).padding()
-            }.navigationTitle("").navigationBarHidden(true)
+                }).ignoresSafeArea(.all).overlay(
+                
+                    VStack{
+                    Button(action: {
+                        locationMananger.matchingItems = [Place(name: "😎", coordinate: locationMananger.userLocation.coordinate)]
+                        region =  MKCoordinateRegion(center: locationMananger.userLocation.coordinate, span: userSpan)
+                    }, label: {
+                        Image(systemName: "location.fill").foregroundColor(Color(UIColor.systemGray)).padding(20).background(Color.white)
+                            .cornerRadius(20).padding().shadow(radius: 10)
+                    })
+                        
+                    Button(action: {
+                            locationMananger.matchingItems = [Place(name: "", coordinate: appleCampusCoordinate)]
+                            region =  MKCoordinateRegion(center: appleCampusCoordinate, span: appleSpan)
+                        }, label: {
+                            Image(systemName: "applelogo").foregroundColor(Color(UIColor.systemGray)).padding(20).background(Color.white)
+                                .cornerRadius(20).padding().shadow(radius: 10)
+                        })
+                        
+                    },
+                    
+                    alignment: .trailing
+                )
+                SearchBar(text: $text,region: $region, locationManager: locationMananger).padding().shadow(radius: 20)
+            }.animation(.easeInOut).navigationTitle("").navigationBarHidden(true)
         }
     }
 }
 
 
+
+
 struct SearchBar:View{
     @Binding var text:String
+    @Binding var region:MKCoordinateRegion
     @State var isEditing = false
     var locationManager:LocationMananger
     var body: some View {
@@ -47,15 +76,7 @@ struct SearchBar:View{
                 }){
                     Image(systemName: "xmark.circle.fill")
                 }.padding(.trailing, 10)
-            }.background(Color(UIColor.systemGray)).cornerRadius(10)
-            .onChange(of: text, perform: { text in
-                if text == ""{
-                    locationManager.matchingItems.removeAll()
-                }else{
-                    locationManager.searchPlace(text: text)
-                }
-                
-            })
+            }.background(Color(UIColor.systemGray)).cornerRadius(20)
             .gesture(
                 
                 TapGesture().onEnded(
@@ -67,11 +88,12 @@ struct SearchBar:View{
             )
             if isEditing {
                 Button(action: {
+                    locationManager.searchPlace(text: text, region: region)
                     UIApplication.shared.closeKeyboar()
                     self.isEditing = false
                     self.text = ""
                 }){
-                    Text("Cancel").foregroundColor(Color(UIColor.systemGray)).fontWeight(.bold)
+                    Text("Search").foregroundColor(Color(UIColor.systemGray)).fontWeight(.bold)
                 }.transition(.move(edge: .trailing))
             }
         }.foregroundColor(.white).animation(.default)

@@ -30,11 +30,11 @@ struct CustomPlaceMarker: View {
     var body: some View{
         ZStack{
             VStack(alignment: .center, spacing:0){
-                Text(name).foregroundColor(.white).padding().background(Color.blue).cornerRadius(10)
+                Text(name).font(.system(size: 15)).foregroundColor(.white).padding(.horizontal).padding(.vertical, 5).background(Color.blue).cornerRadius(10)
                 Triangle()
                     .fill(Color.blue)
-                    .frame(width: 10, height: 20)
-            }.padding(10)
+                    .frame(width: 10, height: 7)
+            }.padding(10).shadow(radius: 5)
         }
     }
 }

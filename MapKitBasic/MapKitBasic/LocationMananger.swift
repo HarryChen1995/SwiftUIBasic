@@ -12,37 +12,34 @@ import Combine
 struct Place: Identifiable {
     let id = UUID()
     var name: String
-    var address: String
     var coordinate: CLLocationCoordinate2D
 }
 
 
-let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+
 class LocationMananger:NSObject, CLLocationManagerDelegate, ObservableObject {
     var locationManager = CLLocationManager()
+    @Published var userLocation: CLLocation = CLLocation(latitude: 37.3875, longitude: -122.4194)
     @Published var  matchingItems:[Place] = []
-    @Published var reigion = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.3875, longitude: -122.4194), span: span)
-    @Published var location = CLLocationCoordinate2D(latitude: 37.3875, longitude: -122.4194)
-   override init(){
-    super.init()
-    self.locationManager.delegate = self
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-    self.locationManager.distanceFilter = kCLDistanceFilterNone
-    self.locationManager.requestWhenInUseAuthorization()
-    self.locationManager.activityType = .automotiveNavigation
-    self.locationManager.allowsBackgroundLocationUpdates = true
-    self.locationManager.requestWhenInUseAuthorization()
-    self.locationManager.startUpdatingLocation()
-    self.locationManager.requestLocation()
+
+    override init(){
+        super.init()
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.distanceFilter = kCLDistanceFilterNone
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.activityType = .automotiveNavigation
+        self.locationManager.allowsBackgroundLocationUpdates = true
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+        self.locationManager.requestLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let mylocation = locations.first else{
             return
         }
-        location = mylocation.coordinate
-        reigion =  MKCoordinateRegion(center: mylocation.coordinate, span: span)
-        
+        userLocation = mylocation
         
     }
     
@@ -57,10 +54,10 @@ class LocationMananger:NSObject, CLLocationManagerDelegate, ObservableObject {
     }
     
 
-    func searchPlace(text:String){
+    func searchPlace(text:String, region:MKCoordinateRegion){
         let request =  MKLocalSearch.Request()
         request.naturalLanguageQuery = text
-        request.region = reigion
+        request.region = region
         let search = MKLocalSearch(request: request)
         search.start(completionHandler: { response,  _ in
             guard let response = response else {
@@ -68,7 +65,7 @@ class LocationMananger:NSObject, CLLocationManagerDelegate, ObservableObject {
             }
             self.matchingItems = []
             for item in response.mapItems {
-                self.matchingItems.append(Place(name: item.placemark.name!, address: item.placemark.title!,coordinate: item.placemark.coordinate))
+                self.matchingItems.append(Place(name: item.placemark.name!,coordinate: item.placemark.coordinate))
             }
             print(self.matchingItems)
         })
