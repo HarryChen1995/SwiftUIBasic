@@ -46,7 +46,7 @@ struct Home: View{
                         i in
                         GeometryReader{
                             g in
-                            CardView(card: $placeCards[i], hero: $hero)
+                            CardView(card: $placeCards[i])
                                 .offset(y: self.placeCards[i].expand ? -g.frame(in: .global).minY: 10)
                                 .opacity(self.hero ? (self.placeCards[i].expand ? 1:0) : 1)
                                 .onTapGesture{
@@ -66,7 +66,6 @@ struct Home: View{
 
 struct CardView: View {
     @Binding var card: PlaceCard
-    @Binding var hero: Bool
     
     var body: some View{
         VStack {
