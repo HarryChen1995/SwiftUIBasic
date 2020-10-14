@@ -55,13 +55,13 @@ struct MealItemView: View {
                     Image(systemName: "plus").foregroundColor(.black)
                 })
             }
-        }.padding().background(Color.white).gesture(
+        }.padding().background(Color.white).offset(x:mealItem.offsetX).gesture(
             DragGesture().onChanged(changed(value:)).onEnded(ended(value:))
         ).onTapGesture{
             withAnimation(.easeOut){
                 mealItem.offsetX = 0
             }
-        }.offset(x:mealItem.offsetX)
+        }
         }
     }
     
