@@ -47,7 +47,7 @@ struct Home : View {
                                         Image("queengambit").resizable().scaledToFit()
                                             .cornerRadius(10)
                                             .shadow(color: Color.white, radius: 5 )
-                                            .scaleEffect(CGSize(width: scale, height: scale))
+                                            .scaleEffect(CGSize(width: scale, height: scale)).animation(.easeInOut(duration: 1))
                                         Text("Queen's Gambit").foregroundColor(.white).fontWeight(.bold).padding(.top).multilineTextAlignment(.center)
                                     }
                                 }
@@ -55,7 +55,7 @@ struct Home : View {
                                 
                             }
                         }.padding(32)
-                    }.animation(.easeInOut)
+                    }
                 }
             }
         }
