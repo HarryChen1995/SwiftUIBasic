@@ -31,7 +31,7 @@ struct VideoPlayerContainerView:View{
     }
     var body: some View {
         ZStack(alignment:.bottom){
-            VideoPlayerView(player: player, pos:$pos, duration: $duration).frame(height:400).background(Color.black)
+            VideoPlayerView(player: player, pos:$pos, duration: $duration).frame(height:300).background(Color.black)
             HStack{
                 if pos != 1 {
             Button(action: {

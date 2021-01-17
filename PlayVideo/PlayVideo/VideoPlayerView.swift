@@ -9,6 +9,14 @@ import SwiftUI
 import AVKit
 
 class UIVideoPlayerView: UIView {
+    let activityIndicator : UIActivityIndicatorView = {
+       let avi = UIActivityIndicatorView()
+        avi.style = UIActivityIndicatorView.Style.large
+        avi.color = .white
+        avi.translatesAutoresizingMaskIntoConstraints = false
+        avi.startAnimating()
+    return avi
+    }()
     
     private let  playerLayer = AVPlayerLayer()
     var player:AVPlayer
@@ -20,6 +28,11 @@ class UIVideoPlayerView: UIView {
         self._duration = duration
         self.player = player
         super.init(frame: .zero)
+        addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
         playerLayer.player = self.player
         player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: nil, using: {
             time in
@@ -30,6 +43,10 @@ class UIVideoPlayerView: UIView {
             
         })
         player.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
+        
+        
+        player.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
+        
         layer.addSublayer(playerLayer)
     }
     
@@ -39,6 +56,22 @@ class UIVideoPlayerView: UIView {
                 self.duration = duration
             }
         }
+        
+        if keyPath == "timeControlStatus", let change = change, let newValue = change[NSKeyValueChangeKey.newKey] as? Int, let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int {
+            let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
+            let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
+            
+            if newStatus != oldStatus {
+                DispatchQueue.main.async {
+                    if newStatus == .playing || newStatus == .paused {
+                        self.activityIndicator.stopAnimating()
+                    }else{
+                        self.activityIndicator.startAnimating()
+                    }
+                }
+            }
+        
+     }
     }
     
     required init?(coder: NSCoder) {
