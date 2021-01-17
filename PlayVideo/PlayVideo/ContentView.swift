@@ -17,7 +17,7 @@ struct ContentView: View {
 
 
 struct VideoPlayerContainerView:View{
-    var player:AVPlayer = AVPlayer(url: URL(string: "http://localhost:4000/ocean.mp4")!)
+    var player:AVPlayer = AVPlayer(playerItem:  AVPlayerItem(asset: AVURLAsset(url: URL(string: "http://localhost:4000/ocean.mp4")!, options: nil)))
     @State var isPlaying = false
     @State var pos: Double = 0.0
     @State var duration: Double = 0.0
